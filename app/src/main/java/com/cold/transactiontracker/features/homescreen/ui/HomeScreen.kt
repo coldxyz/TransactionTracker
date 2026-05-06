@@ -26,12 +26,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.cold.transactiontracker.core.navigation.data.NavigationDestination
 import com.cold.transactiontracker.core.navigation.ui.BottomNavigationBar
 import com.cold.transactiontracker.features.homescreen.ui.components.BalanceCard
+import com.cold.transactiontracker.features.homescreen.ui.components.CategoryRow
 import com.cold.transactiontracker.features.transactions.data.TransactionType
 import com.cold.transactiontracker.features.transactions.ui.FilteredTransactionsDestination
 import com.cold.transactiontracker.features.transactions.ui.TransactionsListDestination
@@ -179,28 +179,6 @@ fun SectionHeader(
                     if (enabled) Modifier.clickable { onViewAllClick() }
                     else Modifier
                 )
-        )
-    }
-}
-
-@Composable
-fun CategoryRow(
-    name: String,
-    amount: Double,
-    isExpense: Boolean
-) {
-    val color = if (isExpense) Color(0xFFC62828) else Color(0xFF2E7D32)
-    val prefix = if (isExpense) "- €" else "+ €"
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(name)
-
-        Text(
-            text = "$prefix%.2f".format(amount),
-            color = color
         )
     }
 }
