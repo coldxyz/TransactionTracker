@@ -11,7 +11,8 @@ fun TransactionsSection(
     title: String,
     items: List<CategoryTotal>,
     isExpense: Boolean,
-    onViewAllClick: () -> Unit
+    onViewAllClick: () -> Unit,
+    onCategoryClick: (Int) -> Unit
 ) {
 
     Column(
@@ -29,7 +30,10 @@ fun TransactionsSection(
             CategoryRow(
                 name = item.categoryName,
                 amount = item.total,
-                isExpense = isExpense
+                isExpense = isExpense,
+                onClick = {
+                    onCategoryClick(item.categoryId)
+                }
             )
         }
     }

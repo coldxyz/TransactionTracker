@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.cold.transactiontracker.features.homescreen.ui.HomeUiState
 import com.cold.transactiontracker.features.transactions.data.TransactionType
+import com.cold.transactiontracker.features.transactions.ui.CategoryTransactionsDestination
 import com.cold.transactiontracker.features.transactions.ui.FilteredTransactionsDestination
 import com.cold.transactiontracker.features.transactions.ui.TransactionsListDestination
 
@@ -50,6 +51,12 @@ fun HomeContent(
                         FilteredTransactionsDestination
                             .createRoute(TransactionType.EXPENSE)
                     )
+                },
+                onCategoryClick = { categoryId ->
+                    onNavigate(
+                        CategoryTransactionsDestination
+                            .createRoute(categoryId)
+                    )
                 }
             )
         }
@@ -63,6 +70,12 @@ fun HomeContent(
                     onNavigate(
                         FilteredTransactionsDestination
                             .createRoute(TransactionType.INCOME)
+                    )
+                },
+                onCategoryClick = { categoryId ->
+                    onNavigate(
+                        CategoryTransactionsDestination
+                            .createRoute(categoryId)
                     )
                 }
             )
