@@ -52,10 +52,12 @@ fun HomeContent(
                             .createRoute(TransactionType.EXPENSE)
                     )
                 },
-                onCategoryClick = { categoryId ->
+                onCategoryClick = { categoryId, categoryName ->
                     onNavigate(
-                        CategoryTransactionsDestination
-                            .createRoute(categoryId)
+                        CategoryTransactionsDestination.createRoute(
+                            categoryId = categoryId,
+                            categoryName = categoryName
+                        )
                     )
                 }
             )
@@ -72,10 +74,12 @@ fun HomeContent(
                             .createRoute(TransactionType.INCOME)
                     )
                 },
-                onCategoryClick = { categoryId ->
+                onCategoryClick = { categoryId, categoryName ->
                     onNavigate(
-                        CategoryTransactionsDestination
-                            .createRoute(categoryId)
+                        CategoryTransactionsDestination.createRoute(
+                            categoryId = categoryId,
+                            categoryName = categoryName
+                        )
                     )
                 }
             )

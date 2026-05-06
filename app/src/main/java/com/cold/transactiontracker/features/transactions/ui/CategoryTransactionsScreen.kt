@@ -36,6 +36,7 @@ object CategoryTransactionsDestination : NavigationDestination {
 @Composable
 fun CategoryTransactionsScreen(
     categoryId: Int,
+    categoryName: String,
     viewModel: TransactionViewModel,
     navigateBack: () -> Unit
 ) {
@@ -47,7 +48,7 @@ fun CategoryTransactionsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {Text("Category Transactions")},
+                title = {Text(categoryName)},
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
