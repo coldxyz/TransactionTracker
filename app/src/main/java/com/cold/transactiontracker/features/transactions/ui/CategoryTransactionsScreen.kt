@@ -13,7 +13,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.cold.transactiontracker.core.navigation.data.NavigationDestination
 import com.cold.transactiontracker.features.transactions.ui.components.TransactionsListContent
+
+object CategoryTransactionsDestination : NavigationDestination {
+
+    override val route = "category_transactions"
+
+    const val CATEGORY_ID_ARG = "categoryId"
+
+    fun createRoute(categoryId: Int): String {
+        return "$route/$categoryId"
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
