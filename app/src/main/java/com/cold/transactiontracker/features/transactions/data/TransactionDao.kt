@@ -6,8 +6,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.cold.transactiontracker.features.transactions.data.model.CategoryTotal
 import com.cold.transactiontracker.features.transactions.data.model.BalanceResult
+import com.cold.transactiontracker.features.transactions.data.model.CategoryTotal
 import com.cold.transactiontracker.features.transactions.data.model.TransactionWithCategory
 import kotlinx.coroutines.flow.Flow
 
@@ -50,12 +50,16 @@ interface TransactionDao {
     // ---------------- CATEGORY TOTALS ----------------
 
     @Query("""
-        SELECT c.name as categoryName, SUM(t.amount) as total
-        FROM transactions t
-        INNER JOIN categories c ON t.categoryId = c.id
-        WHERE t.type = :type
-        GROUP BY c.id
-        ORDER BY total DESC
+    SELECT 
+        c.id AS categoryId,
+        c.name AS categoryName,
+        SUM(t.amount) AS total
+    FROM transactions t
+    INNER JOIN categories c 
+        ON t.categoryId = c.id
+    WHERE t.type = :type
+    GROUP BY c.id
+    ORDER BY total DESC
     """)
     fun getTotalsByCategory(type: TransactionType): Flow<List<CategoryTotal>>
 }
