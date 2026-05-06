@@ -17,6 +17,8 @@ import com.cold.transactiontracker.features.homescreen.ui.HomeScreen
 import com.cold.transactiontracker.features.settings.ui.SettingsDestination
 import com.cold.transactiontracker.features.settings.ui.SettingsScreen
 import com.cold.transactiontracker.features.transactions.data.TransactionType
+import com.cold.transactiontracker.features.transactions.ui.CategoryTransactionsDestination
+import com.cold.transactiontracker.features.transactions.ui.CategoryTransactionsScreen
 import com.cold.transactiontracker.features.transactions.ui.FilteredTransactionsDestination
 import com.cold.transactiontracker.features.transactions.ui.FilteredTransactionsScreen
 import com.cold.transactiontracker.features.transactions.ui.TransactionEntryDestination
@@ -99,6 +101,26 @@ fun AppNavHost(
                 type = type,
                 viewModel = viewModel,
                 navigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = "${CategoryTransactionsDestination.route}/{${CategoryTransactionsDestination.CATEGORY_ID_ARG}}"
+        ) { backStackEntry ->
+
+            val categoryId = backStackEntry.arguments
+                ?.getString(CategoryTransactionsDestination.CATEGORY_ID_ARG)
+                ?.toIntOrNull()
+                ?: return@composable
+
+            val viewModel: TransactionViewModel = hiltViewModel()
+
+            CategoryTransactionsScreen(
+                categoryId = categoryId,
+                viewModel = viewModel,
+                navigateBack = {
+                    navController.popBackStack()
+                }
             )
         }
 
