@@ -50,16 +50,26 @@ interface TransactionDao {
     // ---------------- CATEGORY TOTALS ----------------
 
     @Query("""
-    SELECT 
-        c.id AS categoryId,
-        c.name AS categoryName,
-        SUM(t.amount) AS total
-    FROM transactions t
-    INNER JOIN categories c 
-        ON t.categoryId = c.id
-    WHERE t.type = :type
-    GROUP BY c.id
-    ORDER BY total DESC
-""")
+        SELECT 
+            c.id AS categoryId,
+            c.name AS categoryName,
+            SUM(t.amount) AS total
+        FROM transactions t
+        INNER JOIN categories c 
+            ON t.categoryId = c.id
+        WHERE t.type = :type
+        GROUP BY c.id
+        ORDER BY total DESC
+    """)
     fun getTotalsByCategory(type: TransactionType): Flow<List<CategoryTotal>>
+
+    @Transaction
+        @Query("""
+        SELECT * FROM transactions
+        WHERE categoryId = :categoryId
+        ORDER BY timestamp DESC
+    """)
+    fun getTransactionsByCategory(
+        categoryId: Int
+    ): Flow<List<TransactionWithCategory>>
 }

@@ -63,6 +63,8 @@ class TransactionViewModel @Inject constructor(
     val incomeByCategory = repository.getIncomeByCategory()
         .stateIn(viewModelScope, WhileSubscribed, emptyList())
 
+    fun getTransactionsByCategory(categoryId: Int) =
+        repository.getTransactionsByCategory(categoryId)
     // ---------------- EVENTS ----------------
 
     fun onAmountChange(amount: String) {

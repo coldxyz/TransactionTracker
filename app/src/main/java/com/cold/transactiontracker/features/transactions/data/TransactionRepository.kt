@@ -25,6 +25,9 @@ class TransactionRepository @Inject constructor(
     fun getIncomeByCategory() =
         dao.getTotalsByCategory(TransactionType.INCOME)
 
+    fun getTransactionsByCategory(categoryId: Int) =
+        dao.getTransactionsByCategory(categoryId)
+
     suspend fun insert(transaction: Transaction) =
         dao.upsertTransaction(transaction)
 
