@@ -14,6 +14,8 @@ import com.cold.transactiontracker.features.categories.ui.CategorySelectionScree
 import com.cold.transactiontracker.features.categories.ui.CategoryViewModel
 import com.cold.transactiontracker.features.homescreen.ui.HomeDestination
 import com.cold.transactiontracker.features.homescreen.ui.HomeScreen
+import com.cold.transactiontracker.features.settings.ui.SettingsDestination
+import com.cold.transactiontracker.features.settings.ui.SettingsScreen
 import com.cold.transactiontracker.features.transactions.data.TransactionType
 import com.cold.transactiontracker.features.transactions.ui.FilteredTransactionsDestination
 import com.cold.transactiontracker.features.transactions.ui.FilteredTransactionsScreen
@@ -50,6 +52,23 @@ fun AppNavHost(
                 },
                 navigateToTransactionEntry = {
                     navController.navigate(TransactionEntryDestination.route)
+                },
+                navigateToSettings = {
+                    navController.navigate(SettingsDestination.route)
+                }
+            )
+        }
+
+        composable(SettingsDestination.route) {
+            SettingsScreen(
+                navigateBack = {
+                    navController.popBackStack()
+                },
+                navigateToCategories = {
+                    // TODO
+                },
+                navigateToRecurring = {
+                    // TODO
                 }
             )
         }
