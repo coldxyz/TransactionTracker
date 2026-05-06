@@ -1,6 +1,6 @@
 package com.cold.transactiontracker.features.homescreen.ui
 
-import com.cold.transactiontracker.features.homescreen.ui.model.CategoryTotal
+import com.cold.transactiontracker.features.transactions.data.model.CategoryTotal
 
 data class HomeUiState(
     val totalIncome: Double = 0.0,

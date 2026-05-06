@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import com.cold.transactiontracker.features.homescreen.ui.model.CategoryTotal
+import com.cold.transactiontracker.features.transactions.data.model.CategoryTotal
 
 @Composable
 fun TransactionsSection(

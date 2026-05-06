@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.cold.transactiontracker.features.homescreen.ui.model.CategoryTotal
+import com.cold.transactiontracker.features.transactions.data.model.CategoryTotal
 import com.cold.transactiontracker.features.transactions.data.model.BalanceResult
 import com.cold.transactiontracker.features.transactions.data.model.TransactionWithCategory
 import kotlinx.coroutines.flow.Flow
