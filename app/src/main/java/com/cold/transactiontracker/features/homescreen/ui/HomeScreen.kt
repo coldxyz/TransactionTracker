@@ -157,33 +157,6 @@ fun HomeScreen(
 }
 
 @Composable
-fun SectionHeader(
-    title: String,
-    enabled: Boolean,
-    onViewAllClick: () -> Unit = {}
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(title, style = MaterialTheme.typography.titleMedium)
-
-        Text(
-            text = "View All",
-            color = if (enabled)
-                MaterialTheme.colorScheme.primary
-            else
-                MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier
-                .then(
-                    if (enabled) Modifier.clickable { onViewAllClick() }
-                    else Modifier
-                )
-        )
-    }
-}
-
-@Composable
 fun LoadingState(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
