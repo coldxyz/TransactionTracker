@@ -105,7 +105,7 @@ fun AppNavHost(
         }
 
         composable(
-            route = "${CategoryTransactionsDestination.route}/{${CategoryTransactionsDestination.CATEGORY_ID_ARG}}"
+            route = "${CategoryTransactionsDestination.route}/{${CategoryTransactionsDestination.CATEGORY_ID_ARG}}/{${CategoryTransactionsDestination.CATEGORY_NAME_ARG}}"
         ) { backStackEntry ->
 
             val categoryId = backStackEntry.arguments
@@ -113,10 +113,15 @@ fun AppNavHost(
                 ?.toIntOrNull()
                 ?: return@composable
 
+            val categoryName = backStackEntry.arguments
+                ?.getString(CategoryTransactionsDestination.CATEGORY_NAME_ARG)
+                ?: "Category"
+
             val viewModel: TransactionViewModel = hiltViewModel()
 
             CategoryTransactionsScreen(
                 categoryId = categoryId,
+                categoryName = categoryName,
                 viewModel = viewModel,
                 navigateBack = {
                     navController.popBackStack()
