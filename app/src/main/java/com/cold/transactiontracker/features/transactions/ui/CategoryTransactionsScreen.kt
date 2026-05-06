@@ -21,9 +21,14 @@ object CategoryTransactionsDestination : NavigationDestination {
     override val route = "category_transactions"
 
     const val CATEGORY_ID_ARG = "categoryId"
+    const val CATEGORY_NAME_ARG = "categoryName"
 
-    fun createRoute(categoryId: Int): String {
-        return "$route/$categoryId"
+    fun createRoute(
+        categoryId: Int,
+        categoryName: String
+    ): String {
+
+        return "$route/$categoryId/$categoryName"
     }
 }
 
