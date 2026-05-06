@@ -1,11 +1,6 @@
 package com.cold.transactiontracker.features.transactions.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,12 +12,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cold.transactiontracker.core.navigation.data.NavigationDestination
 import com.cold.transactiontracker.features.transactions.data.TransactionType
-import com.cold.transactiontracker.features.transactions.ui.components.EmptyTransactionsState
-import com.cold.transactiontracker.features.transactions.ui.components.TransactionItemCard
+import com.cold.transactiontracker.features.transactions.ui.components.TransactionsListContent
 
 object FilteredTransactionsDestination : NavigationDestination {
     override val route = "filtered_transactions"
@@ -40,14 +33,14 @@ fun FilteredTransactionsScreen(
     viewModel: TransactionViewModel,
     navigateBack: () -> Unit
 ) {
+
     val transactions by viewModel
         .getTransactionsByType(type)
         .collectAsStateWithLifecycle(initialValue = emptyList())
 
-    val title = if (type == TransactionType.EXPENSE) {
-        "All Expenses"
-    } else {
-        "All Income"
+    val title = when (type) {
+        TransactionType.EXPENSE -> "All Expenses"
+        TransactionType.INCOME -> "All Income"
     }
 
     Scaffold(
@@ -63,28 +56,10 @@ fun FilteredTransactionsScreen(
         }
     ) { padding ->
 
-        if (transactions.isEmpty()) {
-            EmptyTransactionsState(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
-            )
-            return@Scaffold
-        }
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(transactions) { item ->
-                TransactionItemCard(
-                    item = item,
-                    onDelete = { viewModel.onDelete(it) }
-                )
-            }
-        }
+        TransactionsListContent(
+            transactions = transactions,
+            onDelete = viewModel::onDelete,
+            modifier = Modifier.padding(padding)
+        )
     }
 }
