@@ -67,7 +67,7 @@ fun TransactionsListScreen(
         ) {
             items(
                 items = transactions,
-                key = { it.transaction.id } // ✅ VERY IMPORTANT
+                key = { it.transaction.id }
             ) { item ->
 
                 SwipeToDeleteItem(
