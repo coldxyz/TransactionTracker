@@ -3,6 +3,7 @@ package com.cold.transactiontracker.features.categories.data
 import com.cold.transactiontracker.features.transactions.data.TransactionType
 
 data class CategoryUiState(
+    val editingCategoryId: Int? = null,
     val name: String = "",
     val iconName: String = "",
     val type: TransactionType = TransactionType.EXPENSE,

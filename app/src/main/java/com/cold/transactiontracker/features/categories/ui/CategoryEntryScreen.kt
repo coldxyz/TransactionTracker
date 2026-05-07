@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,35 +18,101 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cold.transactiontracker.core.navigation.data.NavigationDestination
 import com.cold.transactiontracker.features.transactions.ui.SaveButton
 import com.cold.transactiontracker.features.transactions.ui.TypeSelectorRow
 
-object CategoryEntryDestination : NavigationDestination {
-    override val route = "category_entry"
+object CategoryFlowDestination : NavigationDestination {
+    override val route = "category_flow"
+}
+
+object AddCategoryDestination : NavigationDestination {
+    override val route = "category/add"
+}
+
+object EditCategoryDestination : NavigationDestination {
+
+    const val categoryIdArg = "categoryId"
+
+    override val route =
+        "category/edit/{$categoryIdArg}"
+
+    fun createRoute(categoryId: Int): String {
+        return "category/edit/$categoryId"
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryEntryScreen(
     navigateBack: () -> Unit,
-    viewModel: CategoryViewModel = hiltViewModel()
+    categoryId: Int? = null,
+    viewModel: CategoryViewModel
 ) {
 
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState
+        .collectAsStateWithLifecycle()
+
+    val isEditMode =
+        uiState.editingCategoryId != null
+
+    LaunchedEffect(categoryId) {
+
+        if (categoryId != null) {
+            viewModel.loadCategory(categoryId)
+        }
+    }
 
     Scaffold(
         topBar = {
+
             TopAppBar(
-                title = { Text("Add category") },
+                title = {
+                    Text(
+                        if (isEditMode)
+                            "Edit category"
+                        else
+                            "Add category"
+                    )
+                },
+
                 navigationIcon = {
-                    IconButton(onClick = navigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+
+                    IconButton(
+                        onClick = {
+                            viewModel.onCancel()
+                            navigateBack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            null
+                        )
+                    }
+                },
+
+                actions = {
+
+                    if (isEditMode) {
+
+                        IconButton(
+                            onClick = {
+
+                                viewModel.deleteCurrentCategory()
+
+                                navigateBack()
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Delete"
+                            )
+                        }
                     }
                 }
             )
@@ -57,6 +124,7 @@ fun CategoryEntryScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
+
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
@@ -80,7 +148,9 @@ fun CategoryEntryScreen(
             SaveButton(
                 enabled = uiState.isValid,
                 onClick = {
+
                     viewModel.onSave()
+
                     navigateBack()
                 }
             )

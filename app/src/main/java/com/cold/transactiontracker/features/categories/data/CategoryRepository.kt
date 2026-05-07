@@ -12,19 +12,30 @@ class CategoryRepository @Inject constructor(
         return dao.getAllCategories()
     }
 
-    fun getCategoriesByType(type: TransactionType): Flow<List<Category>> {
+    fun getCategoriesByType(
+        type: TransactionType
+    ): Flow<List<Category>> {
         return dao.getCategoriesByType(type)
     }
 
-    fun getCategoryById(id: Int): Flow<Category?> {
+    suspend fun getCategoryById(id: Int): Category? {
         return dao.getCategoryById(id)
     }
 
-    suspend fun insertCategory(category: Category) {
-        dao.insertCategory(category)
+    suspend fun saveCategory(category: Category) {
+
+        if (category.id == 0) {
+            dao.insertCategory(category)
+        } else {
+            dao.updateCategory(category)
+        }
     }
 
     suspend fun insertDefaults(categories: List<Category>) {
         dao.insertAll(categories)
+    }
+
+    suspend fun deleteCategory(category: Category) {
+        dao.deleteCategory(category)
     }
 }

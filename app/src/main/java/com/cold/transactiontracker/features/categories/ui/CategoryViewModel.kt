@@ -20,13 +20,50 @@ class CategoryViewModel @Inject constructor(
     private val repository: CategoryRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CategoryUiState())
-    val uiState: StateFlow<CategoryUiState> = _uiState.asStateFlow()
+    private var hasLoadedCategory = false
+
+    private val _uiState =
+        MutableStateFlow(CategoryUiState())
+
+    val uiState: StateFlow<CategoryUiState> =
+        _uiState.asStateFlow()
+
+    fun getCategoriesByType(
+        type: TransactionType
+    ): Flow<List<Category>> {
+
+        return repository.getCategoriesByType(type)
+    }
+
+    fun loadCategory(categoryId: Int) {
+
+        if (hasLoadedCategory) return
+
+        hasLoadedCategory = true
+
+        viewModelScope.launch {
+
+            val category =
+                repository.getCategoryById(categoryId)
+                    ?: return@launch
+
+            _uiState.value = CategoryUiState(
+                editingCategoryId = category.id,
+                name = category.name,
+                iconName = category.iconName,
+                type = category.type,
+                isValid = true
+            )
+        }
+    }
 
     fun onNameChange(value: String) {
+
         _uiState.update {
+
             it.copy(
                 name = value,
+
                 isValid = validate(
                     name = value,
                     iconName = it.iconName
@@ -36,9 +73,12 @@ class CategoryViewModel @Inject constructor(
     }
 
     fun onIconChange(value: String) {
+
         _uiState.update {
+
             it.copy(
                 iconName = value,
+
                 isValid = validate(
                     name = it.name,
                     iconName = value
@@ -48,23 +88,57 @@ class CategoryViewModel @Inject constructor(
     }
 
     fun onTypeChange(type: TransactionType) {
+
         _uiState.update {
             it.copy(type = type)
         }
     }
 
     fun onSave() {
+
         val state = _uiState.value
 
         val category = Category(
+            id = state.editingCategoryId ?: 0,
             name = state.name,
             iconName = state.iconName,
             type = state.type
         )
 
         viewModelScope.launch {
-            repository.insertCategory(category)
+
+            repository.saveCategory(category)
+
+            resetState()
         }
+    }
+
+    fun deleteCurrentCategory() {
+
+        val state = _uiState.value
+
+        val category = Category(
+            id = state.editingCategoryId ?: return,
+            name = state.name,
+            iconName = state.iconName,
+            type = state.type
+        )
+
+        viewModelScope.launch {
+
+            repository.deleteCategory(category)
+
+            resetState()
+        }
+    }
+
+    fun onCancel() {
+        resetState()
+    }
+
+    private fun resetState() {
+
+        hasLoadedCategory = false
 
         _uiState.value = CategoryUiState()
     }
@@ -73,11 +147,8 @@ class CategoryViewModel @Inject constructor(
         name: String,
         iconName: String
     ): Boolean {
+
         return name.isNotBlank() &&
                 iconName.isNotBlank()
-    }
-
-    fun getCategoriesByType(type: TransactionType): Flow<List<Category>> {
-        return repository.getCategoriesByType(type)
     }
 }
