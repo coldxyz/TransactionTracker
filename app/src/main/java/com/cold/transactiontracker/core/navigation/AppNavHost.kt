@@ -1,14 +1,17 @@
 package com.cold.transactiontracker.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.cold.transactiontracker.features.categories.ui.CategoriesDestination
 import com.cold.transactiontracker.features.categories.ui.CategoriesListScreen
 import com.cold.transactiontracker.features.categories.ui.CategoryEntryDestination
@@ -21,12 +24,14 @@ import com.cold.transactiontracker.features.homescreen.ui.HomeScreen
 import com.cold.transactiontracker.features.settings.ui.SettingsDestination
 import com.cold.transactiontracker.features.settings.ui.SettingsScreen
 import com.cold.transactiontracker.features.transactions.data.TransactionType
+import com.cold.transactiontracker.features.transactions.ui.AddTransactionDestination
 import com.cold.transactiontracker.features.transactions.ui.CategoryTransactionsDestination
 import com.cold.transactiontracker.features.transactions.ui.CategoryTransactionsScreen
+import com.cold.transactiontracker.features.transactions.ui.EditTransactionDestination
 import com.cold.transactiontracker.features.transactions.ui.FilteredTransactionsDestination
 import com.cold.transactiontracker.features.transactions.ui.FilteredTransactionsScreen
-import com.cold.transactiontracker.features.transactions.ui.TransactionEntryDestination
 import com.cold.transactiontracker.features.transactions.ui.TransactionEntryScreen
+import com.cold.transactiontracker.features.transactions.ui.TransactionFlowDestination
 import com.cold.transactiontracker.features.transactions.ui.TransactionViewModel
 import com.cold.transactiontracker.features.transactions.ui.TransactionsListDestination
 import com.cold.transactiontracker.features.transactions.ui.TransactionsListScreen
@@ -57,7 +62,7 @@ fun AppNavHost(
                     }
                 },
                 navigateToTransactionEntry = {
-                    navController.navigate(TransactionEntryDestination.route)
+                    navController.navigate(AddTransactionDestination.route)
                 },
                 navigateToSettings = {
                     navController.navigate(SettingsDestination.route)
@@ -96,11 +101,24 @@ fun AppNavHost(
 
         composable(TransactionsListDestination.route) {
 
-            val viewModel: TransactionViewModel = hiltViewModel()
+            val transactionViewModel: TransactionViewModel =
+                hiltViewModel()
 
             TransactionsListScreen(
-                viewModel = viewModel,
-                navigateBack = { navController.popBackStack() }
+                viewModel = transactionViewModel,
+
+                navigateBack = {
+                    navController.popBackStack()
+                },
+
+                navigateToEditTransaction = { transactionId ->
+
+                    navController.navigate(
+                        EditTransactionDestination.createRoute(
+                            transactionId
+                        )
+                    )
+                }
             )
         }
 
@@ -119,7 +137,15 @@ fun AppNavHost(
             FilteredTransactionsScreen(
                 type = type,
                 viewModel = viewModel,
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.popBackStack() },
+                navigateToEditTransaction = { transactionId ->
+
+                    navController.navigate(
+                        EditTransactionDestination.createRoute(
+                            transactionId
+                        )
+                    )
+                },
             )
         }
 
@@ -142,6 +168,14 @@ fun AppNavHost(
                 categoryId = categoryId,
                 categoryName = categoryName,
                 viewModel = viewModel,
+                navigateToEditTransaction = { transactionId ->
+
+                    navController.navigate(
+                        EditTransactionDestination.createRoute(
+                            transactionId
+                        )
+                    )
+                },
                 navigateBack = {
                     navController.popBackStack()
                 }
@@ -149,39 +183,125 @@ fun AppNavHost(
         }
 
         navigation(
-            startDestination = TransactionEntryDestination.route,
-            route = "transaction_flow"
+            startDestination = "transaction_root",
+            route = TransactionFlowDestination.route
         ) {
-            composable(TransactionEntryDestination.route) { backStackEntry ->
+
+            composable("transaction_root") {
+
+                LaunchedEffect(Unit) {
+
+                    navController.navigate(
+                        AddTransactionDestination.route
+                    ) {
+                        popUpTo("transaction_root") {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
+
+            composable(
+                route = AddTransactionDestination.route
+            ) { backStackEntry ->
 
                 val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry("transaction_flow")
+
+                    navController.getBackStackEntry(
+                        TransactionFlowDestination.route
+                    )
                 }
 
-                val viewModel: TransactionViewModel = hiltViewModel(parentEntry)
+                val transactionViewModel: TransactionViewModel =
+                    hiltViewModel(parentEntry)
 
                 TransactionEntryScreen(
-                    viewModel = viewModel,
-                    navigateBack = { navController.popBackStack() },
+                    viewModel = transactionViewModel,
+
+                    navigateBack = {
+                        navController.popBackStack()
+                    },
+
                     navigateToCategorySelection = {
-                        navController.navigate(CategorySelectionDestination.route)
+
+                        navController.navigate(
+                            CategorySelectionDestination.route
+                        )
                     }
                 )
             }
 
-            composable(CategorySelectionDestination.route) { backStackEntry ->
+            composable(
+                route = EditTransactionDestination.route,
+
+                arguments = listOf(
+                    navArgument(
+                        EditTransactionDestination.transactionIdArg
+                    ) {
+                        type = NavType.IntType
+                    }
+                )
+            ) { backStackEntry ->
 
                 val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry("transaction_flow")
+
+                    navController.getBackStackEntry(
+                        TransactionFlowDestination.route
+                    )
                 }
 
-                val transactionViewModel: TransactionViewModel = hiltViewModel(parentEntry)
-                val categoryViewModel: CategoryViewModel = hiltViewModel()
+                val transactionViewModel: TransactionViewModel =
+                    hiltViewModel(parentEntry)
+
+                val transactionId =
+                    backStackEntry.arguments!!
+                        .getInt(
+                            EditTransactionDestination.transactionIdArg
+                        )
+
+                TransactionEntryScreen(
+                    viewModel = transactionViewModel,
+
+                    transactionId = transactionId,
+
+                    navigateBack = {
+                        navController.popBackStack()
+                    },
+
+                    navigateToCategorySelection = {
+
+                        navController.navigate(
+                            CategorySelectionDestination.route
+                        )
+                    }
+                )
+            }
+
+            composable(
+                CategorySelectionDestination.route
+            ) { backStackEntry ->
+
+                val parentEntry = remember(backStackEntry) {
+
+                    navController.getBackStackEntry(
+                        TransactionFlowDestination.route
+                    )
+                }
+
+                val transactionViewModel: TransactionViewModel =
+                    hiltViewModel(parentEntry)
+
+                val categoryViewModel: CategoryViewModel =
+                    hiltViewModel()
 
                 CategorySelectionScreen(
                     transactionViewModel = transactionViewModel,
+
                     categoryViewModel = categoryViewModel,
-                    navigateBack = { navController.popBackStack() }
+
+                    navigateBack = {
+                        navController.popBackStack()
+                    }
                 )
             }
         }
