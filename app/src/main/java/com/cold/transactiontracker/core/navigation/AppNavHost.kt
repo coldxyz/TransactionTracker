@@ -80,6 +80,7 @@ fun AppNavHost(
         composable(CategoriesDestination.route) {
             CategoriesListScreen(
                 navigateBack = { navController.popBackStack() },
+                navigateToAddCategory = {}
             )
         }
 

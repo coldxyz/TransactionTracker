@@ -6,6 +6,7 @@ import com.cold.transactiontracker.features.categories.data.Category
 import com.cold.transactiontracker.features.categories.data.CategoryRepository
 import com.cold.transactiontracker.features.transactions.data.TransactionType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,10 +27,18 @@ class CategoryViewModel @Inject constructor(
         _selectedType.value = type
     }
 
+    fun getCategoriesByType(type: TransactionType): Flow<List<Category>> {
+        return repository.getCategoriesByType(type)
+    }
+
     val categories: StateFlow<List<Category>> =
         _selectedType
             .flatMapLatest { type ->
                 repository.getCategoriesByType(type)
             }
+            .stateIn(viewModelScope, WhileSubscribed, emptyList())
+
+    val allCategories: StateFlow<List<Category>> =
+        repository.getAllCategories()
             .stateIn(viewModelScope, WhileSubscribed, emptyList())
 }

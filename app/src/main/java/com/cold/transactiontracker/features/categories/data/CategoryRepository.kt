@@ -2,7 +2,6 @@ package com.cold.transactiontracker.features.categories.data
 
 import com.cold.transactiontracker.features.transactions.data.TransactionType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class CategoryRepository @Inject constructor(
@@ -14,9 +13,7 @@ class CategoryRepository @Inject constructor(
     }
 
     fun getCategoriesByType(type: TransactionType): Flow<List<Category>> {
-        return dao.getAllCategories().map { list ->
-            list.filter { it.type == type }
-        }
+        return dao.getCategoriesByType(type)
     }
 
     fun getCategoryById(id: Int): Flow<Category?> {
