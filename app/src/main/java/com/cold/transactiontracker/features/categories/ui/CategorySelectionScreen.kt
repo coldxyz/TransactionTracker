@@ -14,7 +14,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,6 +21,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cold.transactiontracker.core.navigation.data.NavigationDestination
 import com.cold.transactiontracker.features.transactions.ui.TransactionViewModel
+
 
 object CategorySelectionDestination: NavigationDestination {
     override val route = "category_selection"
@@ -35,11 +35,9 @@ fun CategorySelectionScreen(
     navigateBack: () -> Unit
 ) {
     val uiState by transactionViewModel.uiState.collectAsStateWithLifecycle()
-    val categories by categoryViewModel.categories.collectAsStateWithLifecycle()
-
-    LaunchedEffect(uiState.type) {
-        categoryViewModel.setType(uiState.type)
-    }
+    val categories by categoryViewModel
+        .getCategoriesByType(uiState.type)
+        .collectAsStateWithLifecycle(initialValue = emptyList())
 
     Scaffold(
         topBar = {
