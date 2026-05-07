@@ -5,28 +5,41 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import com.cold.transactiontracker.features.transactions.data.model.BalanceResult
 import com.cold.transactiontracker.features.transactions.data.model.CategoryTotal
+import com.cold.transactiontracker.features.transactions.data.model.Transaction
 import com.cold.transactiontracker.features.transactions.data.model.TransactionWithCategory
 import kotlinx.coroutines.flow.Flow
+import androidx.room.Transaction as RoomTransaction
 
 @Dao
 interface TransactionDao {
 
     // ---------------- BASIC ----------------
 
-    @Transaction
+    @RoomTransaction
     @Query("""
         SELECT * FROM transactions
     """)
     fun getTransactionsWithCategory(): Flow<List<TransactionWithCategory>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertTransaction(transaction: com.cold.transactiontracker.features.transactions.data.model.Transaction)
+    suspend fun upsertTransaction(transaction: Transaction)
 
     @Delete
-    suspend fun deleteTransaction(transaction: com.cold.transactiontracker.features.transactions.data.model.Transaction)
+    suspend fun deleteTransaction(transaction: Transaction)
+
+    @Query("SELECT * FROM transactions WHERE id = :id")
+    suspend fun getTransactionById(id: Int): Transaction?
+
+    @RoomTransaction
+    @Query("""
+    SELECT * FROM transactions
+    WHERE id = :id
+""")
+    suspend fun getTransactionWithCategoryById(
+        id: Int
+    ): TransactionWithCategory?
 
     // ---------------- TOTALS ----------------
 
@@ -63,7 +76,7 @@ interface TransactionDao {
     """)
     fun getTotalsByCategory(type: TransactionType): Flow<List<CategoryTotal>>
 
-    @Transaction
+    @RoomTransaction
         @Query("""
         SELECT * FROM transactions
         WHERE categoryId = :categoryId

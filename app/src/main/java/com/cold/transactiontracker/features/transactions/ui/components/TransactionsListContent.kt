@@ -15,6 +15,7 @@ import com.cold.transactiontracker.features.transactions.data.model.TransactionW
 fun TransactionsListContent(
     transactions: List<TransactionWithCategory>,
     onDelete: (Transaction) -> Unit,
+    onTransactionClick: (Transaction) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -37,6 +38,11 @@ fun TransactionsListContent(
         ) { item ->
             TransactionItemCard(
                 item = item,
+                onClick = {
+                    onTransactionClick(
+                        item.transaction
+                    )
+                },
                 onDelete = {
                     onDelete(item.transaction)
                 }

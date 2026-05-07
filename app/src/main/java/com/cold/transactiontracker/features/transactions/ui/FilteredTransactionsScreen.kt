@@ -31,7 +31,8 @@ object FilteredTransactionsDestination : NavigationDestination {
 fun FilteredTransactionsScreen(
     type: TransactionType,
     viewModel: TransactionViewModel,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    navigateToEditTransaction: (Int) -> Unit
 ) {
 
     val transactions by viewModel
@@ -49,7 +50,10 @@ fun FilteredTransactionsScreen(
                 title = { Text(title) },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            null
+                        )
                     }
                 }
             )
@@ -58,7 +62,16 @@ fun FilteredTransactionsScreen(
 
         TransactionsListContent(
             transactions = transactions,
+
             onDelete = viewModel::onDelete,
+
+            onTransactionClick = { transaction ->
+
+                navigateToEditTransaction(
+                    transaction.id
+                )
+            },
+
             modifier = Modifier.padding(padding)
         )
     }

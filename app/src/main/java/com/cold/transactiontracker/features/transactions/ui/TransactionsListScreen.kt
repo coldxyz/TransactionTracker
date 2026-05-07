@@ -24,7 +24,8 @@ object TransactionsListDestination : NavigationDestination {
 @Composable
 fun TransactionsListScreen(
     viewModel: TransactionViewModel,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    navigateToEditTransaction: (Int) -> Unit
 ) {
 
     val transactions by viewModel.transactionsSorted
@@ -36,15 +37,28 @@ fun TransactionsListScreen(
                 title = { Text("All Transactions") },
                 navigationIcon = {
                     IconButton(onClick = navigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            null
+                        )
                     }
                 }
             )
         }
     ) { padding ->
+
         TransactionsListContent(
             transactions = transactions,
+
             onDelete = viewModel::onDelete,
+
+            onTransactionClick = { transaction ->
+
+                navigateToEditTransaction(
+                    transaction.id
+                )
+            },
+
             modifier = Modifier.padding(padding)
         )
     }

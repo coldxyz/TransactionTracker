@@ -1,5 +1,6 @@
 package com.cold.transactiontracker.features.transactions.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import com.cold.transactiontracker.features.transactions.ui.formatDate
 @Composable
 fun TransactionItemCard(
     item: TransactionWithCategory,
+    onClick: () -> Unit,
     onDelete: (Transaction) -> Unit
 ) {
     val isExpense = item.transaction.type == TransactionType.EXPENSE
@@ -29,6 +31,7 @@ fun TransactionItemCard(
 
     Card(
         modifier = Modifier.fillMaxWidth()
+            .clickable { onClick() }
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -56,15 +59,6 @@ fun TransactionItemCard(
             }
 
             Spacer(Modifier.height(8.dp))
-            /*
-            Text(
-                text = "Delete",
-                color = Color.Red,
-                modifier = Modifier.clickable {
-                    onDelete(item.transaction)
-                }
-            )
-            */
         }
     }
 }

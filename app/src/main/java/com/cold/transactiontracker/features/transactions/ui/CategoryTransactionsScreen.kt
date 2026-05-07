@@ -38,7 +38,8 @@ fun CategoryTransactionsScreen(
     categoryId: Int,
     categoryName: String,
     viewModel: TransactionViewModel,
-    navigateBack: () -> Unit
+    navigateToEditTransaction: (Int) -> Unit,
+    navigateBack: () -> Unit,
 ) {
 
     val transactions by viewModel
@@ -61,6 +62,11 @@ fun CategoryTransactionsScreen(
         TransactionsListContent(
             transactions = transactions,
             onDelete = viewModel::onDelete,
+            onTransactionClick = { transaction ->
+                navigateToEditTransaction(
+                    transaction.id
+                )
+            },
             modifier = Modifier.padding(padding)
         )
     }

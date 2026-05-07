@@ -8,5 +8,6 @@ data class TransactionUiState(
     val type: TransactionType = TransactionType.EXPENSE,
     val selectedDate: Long = System.currentTimeMillis(),
     val selectedCategory: Category? = null,
-    val isValid: Boolean = false
+    val isValid: Boolean = false,
+    val editingTransactionId: Int? = null
 )

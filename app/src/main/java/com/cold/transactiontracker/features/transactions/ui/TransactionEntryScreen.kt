@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,6 +31,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,8 +45,24 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-object TransactionEntryDestination: NavigationDestination {
-    override val route = "transaction_entry"
+object TransactionFlowDestination : NavigationDestination {
+    override val route = "transaction_flow"
+}
+
+object AddTransactionDestination : NavigationDestination {
+    override val route = "transaction/add"
+}
+
+object EditTransactionDestination : NavigationDestination {
+
+    const val transactionIdArg = "transactionId"
+
+    override val route =
+        "transaction/edit/{$transactionIdArg}"
+
+    fun createRoute(transactionId: Int): String {
+        return "transaction/edit/$transactionId"
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,42 +70,88 @@ object TransactionEntryDestination: NavigationDestination {
 fun TransactionEntryScreen(
     navigateBack: () -> Unit,
     navigateToCategorySelection: () -> Unit,
-    viewModel: TransactionViewModel = androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel()
+    transactionId: Int? = null,
+    viewModel: TransactionViewModel
 ) {
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val isEditMode =
+        uiState.editingTransactionId != null
+
+    LaunchedEffect(transactionId) {
+
+        if (transactionId != null) {
+            viewModel.loadTransaction(transactionId)
+        }
+    }
 
     Scaffold(
         topBar = {
+
             TopAppBar(
-                title = { Text("Add transaction") },
+                title = {
+                    Text(
+                        if (isEditMode)
+                            "Edit transaction"
+                        else
+                            "Add transaction"
+                    )
+                },
+
                 navigationIcon = {
+
                     IconButton(
                         onClick = {
                             viewModel.onCancel()
                             navigateBack()
                         }
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            null
+                        )
+                    }
+                },
+
+                actions = {
+
+                    if (isEditMode) {
+
+                        IconButton(
+                            onClick = {
+
+                                viewModel.deleteCurrentTransaction()
+
+                                navigateBack()
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Delete"
+                            )
+                        }
                     }
                 }
             )
-        },
-        containerColor = MaterialTheme.colorScheme.background
+        }
     ) { padding ->
 
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
-                .fillMaxSize(),
+                .padding(16.dp),
+
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
             DateRow(
                 date = uiState.selectedDate,
                 onClick = {
-                    // temporary: just set current time
-                    viewModel.onDateSelected(System.currentTimeMillis())
+                    viewModel.onDateSelected(
+                        System.currentTimeMillis()
+                    )
                 }
             )
 
@@ -116,7 +180,9 @@ fun TransactionEntryScreen(
             SaveButton(
                 enabled = uiState.isValid,
                 onClick = {
+
                     viewModel.onSave()
+
                     navigateBack()
                 }
             )

@@ -1,6 +1,7 @@
 package com.cold.transactiontracker.features.transactions.data
 
 import com.cold.transactiontracker.features.transactions.data.model.Transaction
+import com.cold.transactiontracker.features.transactions.data.model.TransactionWithCategory
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -28,9 +29,15 @@ class TransactionRepository @Inject constructor(
     fun getTransactionsByCategory(categoryId: Int) =
         dao.getTransactionsByCategory(categoryId)
 
-    suspend fun insert(transaction: Transaction) =
+    suspend fun getTransactionWithCategoryById(
+        id: Int
+    ): TransactionWithCategory? {
+        return dao.getTransactionWithCategoryById(id)
+    }
+
+    suspend fun upsertTransaction(transaction: Transaction) =
         dao.upsertTransaction(transaction)
 
-    suspend fun delete(transaction: Transaction) =
+    suspend fun deleteTransaction(transaction: Transaction) =
         dao.deleteTransaction(transaction)
 }
