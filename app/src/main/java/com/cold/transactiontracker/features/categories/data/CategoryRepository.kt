@@ -20,6 +20,10 @@ class CategoryRepository @Inject constructor(
         return dao.getCategoryById(id)
     }
 
+    suspend fun insertCategory(category: Category) {
+        dao.insertCategory(category)
+    }
+
     suspend fun insertDefaults(categories: List<Category>) {
         dao.insertAll(categories)
     }

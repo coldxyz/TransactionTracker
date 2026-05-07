@@ -20,5 +20,8 @@ interface CategoryDao {
     fun getCategoriesByType(type: TransactionType): Flow<List<Category>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCategory(category: Category)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(categories: List<Category>)
 }

@@ -11,6 +11,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import com.cold.transactiontracker.features.categories.ui.CategoriesDestination
 import com.cold.transactiontracker.features.categories.ui.CategoriesListScreen
+import com.cold.transactiontracker.features.categories.ui.CategoryEntryDestination
+import com.cold.transactiontracker.features.categories.ui.CategoryEntryScreen
 import com.cold.transactiontracker.features.categories.ui.CategorySelectionDestination
 import com.cold.transactiontracker.features.categories.ui.CategorySelectionScreen
 import com.cold.transactiontracker.features.categories.ui.CategoryViewModel
@@ -80,7 +82,15 @@ fun AppNavHost(
         composable(CategoriesDestination.route) {
             CategoriesListScreen(
                 navigateBack = { navController.popBackStack() },
-                navigateToAddCategory = {}
+                navigateToAddCategory = {
+                    navController.navigate(CategoryEntryDestination.route)
+                }
+            )
+        }
+
+        composable(CategoryEntryDestination.route) {
+            CategoryEntryScreen(
+                navigateBack = { navController.popBackStack() }
             )
         }
 
