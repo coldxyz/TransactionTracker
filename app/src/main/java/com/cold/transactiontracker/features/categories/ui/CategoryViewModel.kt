@@ -9,14 +9,11 @@ import com.cold.transactiontracker.features.transactions.data.TransactionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-private val WhileSubscribed = SharingStarted.WhileSubscribed(5_000)
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
