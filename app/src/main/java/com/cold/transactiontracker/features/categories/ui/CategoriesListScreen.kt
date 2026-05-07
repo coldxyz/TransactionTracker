@@ -33,7 +33,8 @@ object CategoriesDestination : NavigationDestination {
 fun CategoriesListScreen(
     viewModel: CategoryViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
-    navigateToAddCategory: () -> Unit
+    navigateToAddCategory: () -> Unit,
+    navigateToEditCategory: (Int) -> Unit
 ) {
 
     val expenseCategories by viewModel
@@ -85,7 +86,11 @@ fun CategoriesListScreen(
                 CategoryItem(
                     category = category,
                     isSelected = false,
-                    onClick = { }
+                    onClick = {
+                        navigateToEditCategory(
+                            category.id
+                        )
+                    }
                 )
             }
 
@@ -103,7 +108,11 @@ fun CategoriesListScreen(
                 CategoryItem(
                     category = category,
                     isSelected = false,
-                    onClick = { }
+                    onClick = {
+                        navigateToEditCategory(
+                            category.id
+                        )
+                    }
                 )
             }
         }
