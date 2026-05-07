@@ -7,10 +7,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -32,10 +33,16 @@ object CategoriesDestination : NavigationDestination {
 fun CategoriesListScreen(
     viewModel: CategoryViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
+    navigateToAddCategory: () -> Unit
 ) {
-    val categories by viewModel.allCategories.collectAsStateWithLifecycle()
 
-    val groupedCategories = categories.groupBy { it.type }
+    val expenseCategories by viewModel
+        .getCategoriesByType(TransactionType.EXPENSE)
+        .collectAsStateWithLifecycle(emptyList())
+
+    val incomeCategories by viewModel
+        .getCategoriesByType(TransactionType.INCOME)
+        .collectAsStateWithLifecycle(emptyList())
 
     Scaffold(
         topBar = {
@@ -47,6 +54,13 @@ fun CategoriesListScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = navigateToAddCategory
+            ) {
+                Icon(Icons.Default.Add, null)
+            }
         }
     ) { padding ->
 
@@ -57,51 +71,40 @@ fun CategoriesListScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
-            groupedCategories[TransactionType.EXPENSE]?.let { expenseCategories ->
-
-                item {
-                    Text(
-                        text = "Expenses",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
-
-                items(
-                    expenseCategories,
-                    key = { it.id }
-                ) { category ->
-
-                    CategoryItem(
-                        category = category,
-                        isSelected = false,
-                        onClick = { }
-                    )
-                }
+            item {
+                Text(
+                    text = "Expenses",
+                )
             }
 
-            groupedCategories[TransactionType.INCOME]?.let { incomeCategories ->
+            items(
+                expenseCategories,
+                key = { it.id }
+            ) { category ->
 
-                item {
-                    Text(
-                        text = "Income",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
-                    )
-                }
+                CategoryItem(
+                    category = category,
+                    isSelected = false,
+                    onClick = { }
+                )
+            }
 
-                items(
-                    incomeCategories,
-                    key = { it.id }
-                ) { category ->
+            item {
+                Text(
+                    text = "Income",
+                )
+            }
 
-                    CategoryItem(
-                        category = category,
-                        isSelected = false,
-                        onClick = { }
-                    )
-                }
+            items(
+                incomeCategories,
+                key = { it.id }
+            ) { category ->
+
+                CategoryItem(
+                    category = category,
+                    isSelected = false,
+                    onClick = { }
+                )
             }
         }
     }
